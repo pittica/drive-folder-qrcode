@@ -21,14 +21,15 @@ export const drive = async (
   logo,
   size,
   margin,
+  format = "PDF",
   credentials = null,
   colorFore = "#000000",
   colorDots = "#000000",
   colorSquare = "#000000",
   colorBackground = "#ffffff",
   colorBorder = "#000000",
-  fontPath = null,
-  fontFamily = "Arial"
+  fontFamily = "Arial",
+  fontPath = null
 ) =>
   await driveGenerator(
     drive,
@@ -45,8 +46,9 @@ export const drive = async (
       path: fontPath,
       family: fontFamily,
     },
-    size,
-    margin,
+    parseFloat(size),
+    parseFloat(margin),
+    format,
     credentials
   )
 
@@ -56,14 +58,15 @@ export const local = async (
   logo,
   size,
   margin,
+  format = "PDF",
   credentials = null,
   colorFore = "#000000",
   colorDots = "#000000",
   colorSquare = "#000000",
   colorBackground = "#ffffff",
   colorBorder = "#000000",
-  fontPath = null,
-  fontFamily = "Arial"
+  fontFamily = "Arial",
+  fontPath = null
 ) =>
   await localGenerator(
     drive,
@@ -80,8 +83,9 @@ export const local = async (
       path: fontPath,
       family: fontFamily,
     },
-    size,
-    margin,
+    parseFloat(size),
+    parseFloat(margin),
+    format,
     credentials
   )
 

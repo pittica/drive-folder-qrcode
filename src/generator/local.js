@@ -14,7 +14,9 @@
 
 import generate from "./generate"
 import { join } from "path"
-import { writeFileSync } from "fs"
+import { writeFileSync, createWriteStream } from "fs"
+import SVGtoPDF from "svg-to-pdfkit"
+import PDFDocument, { heightOfString } from "pdfkit"
 
 export default async (
   drive,
@@ -24,6 +26,7 @@ export default async (
   font,
   size,
   margin,
+  format = "PDF",
   credentials = null
 ) => {
   const images = await generate(
@@ -37,10 +40,25 @@ export default async (
   )
 
   images.forEach(({ folder: { id, name }, qr }) =>
-    qr
-      .getRawData("svg")
-      .then((buffer) =>
-        writeFileSync(join(output, `${name} - ${id}.svg`), buffer.toString())
-      )
+    qr.getRawData("svg").then((buffer) => {
+      switch (format.toUpperCase()) {
+        case "PDF":
+          const pdf = new PDFDocument({
+            compress: false,
+            size: [size * 0.75, (size + margin * 2) * 0.75],
+          })
+          const stream = createWriteStream(join(output, `${name} - ${id}.pdf`))
+
+          SVGtoPDF(pdf, buffer.toString(), 0, 0)
+
+          pdf.pipe(stream)
+          pdf.end()
+
+          break
+        case "SVG":
+          writeFileSync(join(output, `${name} - ${id}.svg`), buffer.toString())
+          break
+      }
+    })
   )
 }

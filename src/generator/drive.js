@@ -14,6 +14,9 @@
 
 import generate from "./generate"
 import { uploadFile } from "../drive/folder"
+import SVGtoPDF from "svg-to-pdfkit"
+import PDFDocument from "pdfkit"
+import MemoryStream from "memorystream"
 
 export default async (
   drive,
@@ -23,6 +26,7 @@ export default async (
   font,
   size,
   margin,
+  format = "pdf",
   credentials = null
 ) => {
   const images = await generate(
@@ -36,16 +40,48 @@ export default async (
   )
 
   images.forEach(({ folder: { id, name }, qr }) =>
-    qr
-      .getRawData("svg")
-      .then((buffer) =>
-        uploadFile(
-          output,
-          buffer.toString(),
-          `${name} - ${id}.svg`,
-          "image/svg+xml",
-          credentials
-        )
-      )
+    qr.getRawData("svg").then((buffer) => {
+      switch (format.toUpperCase()) {
+        case "PDF":
+          const pdf = new PDFDocument({
+            compress: false,
+            size: [size * 0.75, (size + margin * 2) * 0.75],
+          })
+          const stream = new MemoryStream(null, {
+            readable: false,
+          })
+
+          SVGtoPDF(pdf, buffer.toString(), 0, 0, {
+            width: size * 0.75,
+            height: (size + margin) * 0.75,
+          })
+
+          pdf.pipe(stream)
+
+          pdf.on("end", () =>
+            uploadFile(
+              output,
+              Buffer.concat(stream.queue).toString(),
+              `${name} - ${id}.pdf`,
+              "application/pdf",
+              credentials
+            )
+          )
+
+          pdf.end()
+
+          return
+        case "SVG":
+          uploadFile(
+            output,
+            buffer.toString(),
+            `${name} - ${id}.svg`,
+            "image/svg+xml",
+            credentials
+          )
+
+          return
+      }
+    })
   )
 }
