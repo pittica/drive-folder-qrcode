@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import path from "path"
+import { optimize } from "svgo"
 import fillCaption from "./extension/fill-caption"
 import fillMargin from "./extension/fill-margin"
-import { optimize } from "svgo"
 import document from "./extension/document"
+import undef from "./extension/undef"
 
 export default async (
   svg,
@@ -33,9 +34,11 @@ export default async (
     font,
   }
 ) => {
-  registerFont(font.path, {
-    family: font.family,
-  })
+  if (font.path) {
+    registerFont(font.path, {
+      family: font.family,
+    })
+  }
 
   const canvas = createCanvas(width, height + margin, "svg")
   const context = canvas.getContext("2d")
@@ -66,7 +69,7 @@ export default async (
   svg.setAttribute("height", h)
   svg.setAttribute("viewBox", `0 0 ${width} ${h}`)
 
-  const { data } = optimize(svg.outerHTML, {
+  const { data } = optimize(undef(svg).outerHTML, {
     multipass: true,
     plugins: [
       "collapseGroups",

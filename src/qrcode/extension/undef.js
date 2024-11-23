@@ -12,10 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import localGenerator from "./generator/local"
-import driveGenerator from "./generator/drive"
+export default (svg) => {
+  const uses = svg.querySelectorAll("rect[clip-path^='url(']")
 
-export const local = localGenerator
-export const drive = driveGenerator
+  for (let i = 0; i < uses.length; i++) {
+    const id = /^url\('#(.*)'\)$/gs.exec(uses[i].getAttribute("clip-path"))[1]
+    const clip = svg.getElementById(id)
 
-export default { local, drive }
+    for (let j = 0; j < clip.children.length; j++) {
+      if (clip.children[j]) {
+        clip.children[j].setAttribute("fill", uses[i].getAttribute("fill"))
+      }
+    }
+
+    uses[i].outerHTML = clip.innerHTML
+    clip.parentElement.removeChild(clip)
+  }
+
+  return svg
+}
