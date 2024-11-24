@@ -48,6 +48,7 @@ export const list = async (id, credentials = null) => {
 /**
  * Creates a file in the given Drive folder.
  *
+ * @param {GoogleAuth} client Google Auth client instance.
  * @param {string} folder Folder ID.
  * @param {string} content File content.
  * @param {string} name File name.
@@ -55,26 +56,31 @@ export const list = async (id, credentials = null) => {
  * @param {string} credentials Service account path.
  * @returns {File} The created file.
  */
-export const createFile = async (
-  folder,
-  content,
-  name,
-  mimeType,
-  credentials
-) =>
-  await drive(credentials).files.create({
-    requestBody: {
-      name,
-      parents: [folder],
-    },
-    media: {
-      mimeType,
-      body: content,
-    },
-    fields: "id",
-    uploadType: "multipart",
-    supportsAllDrives: true,
-  })
+export const createFile = async (client, folder, content, name, mimeType) =>
+  await client.files
+    .create({
+      requestBody: {
+        name,
+        parents: [folder],
+      },
+      media: {
+        mimeType,
+        body: content,
+      },
+      fields: ["id", "name"],
+      uploadType: "multipart",
+      supportsAllDrives: true,
+    })
+    .then(({ data, status }) => {
+      if (status >= 200 && status < 300) {
+        console.info(`QR code for "${folder}", "${data.id}", created.`)
+      } else {
+        console.error(`Errore creating QR code for "${folder}".`)
+      }
+
+      return data
+    })
+    .catch(() => console.error(`Errore creating QR code for "${folder}".`))
 
 /**
  * Creates a file in the given Drive folder, whether it doesn't exist.
@@ -93,29 +99,36 @@ export const uploadFile = async (
   mimeType,
   credentials
 ) => {
-  const client = drive(credentials)
+  const client = await drive(credentials)
 
-  return await drive(credentials)
-    .files.list({
+  const file = await client.files
+    .list({
       q: `'${folder}' in parents AND mimeType = '${mimeType}' AND name = '${name}' AND trashed = false`,
       pageSize: 1,
-      fields: "nextPageToken, files(id, name, trashed)",
+      fields: "files(id, name, trashed, webViewLink)",
       spaces: "drive",
       includeItemsFromAllDrives: true,
       supportsAllDrives: true,
     })
     .then(async ({ data: { files } }) => {
       if (files.length > 0) {
+        console.info(
+          `QR code for "${folder}", "${files[0].name}", already exists.`,
+          files[0].webViewLink
+        )
+
         return await client.files.get({
           fileId: files[0].id,
           alt: "media",
           supportsAllDrives: true,
         })
       } else {
-        return await createFile(folder, content, name, mimeType, credentials)
+        return await createFile(client, folder, content, name, mimeType)
       }
     })
     .catch(
-      async () => await createFile(folder, content, name, mimeType, credentials)
+      async () => await createFile(client, folder, content, name, mimeType)
     )
+
+  return file
 }

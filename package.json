@@ -1,7 +1,7 @@
 {
   "name": "@pittica/drive-folder-qrcode",
   "private": false,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Creates QR codes from Google Drive folder names.",
   "main": "dist/index.js",
   "scripts": {
