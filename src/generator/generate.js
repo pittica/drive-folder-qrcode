@@ -31,9 +31,8 @@ export default async (
   console.info(`Processing "${drive}"...`)
 
   return folders.map((folder) => {
-    return {
-      folder,
-      qr: image(
+    try {
+      const qr = image(
         folder,
         size,
         margin,
@@ -41,7 +40,16 @@ export default async (
         data ? resize(data, size) : null,
         colors,
         font
-      ),
+      )
+
+      console.info(`Creating QR code for "${folder.name}".`)
+
+      return {
+        folder,
+        qr,
+      }
+    } catch {
+      console.error(`Error creating QR code for "${folder.name}".`)
     }
   })
 }

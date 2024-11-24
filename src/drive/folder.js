@@ -101,7 +101,7 @@ export const uploadFile = async (
 ) => {
   const client = await drive(credentials)
 
-  const file = await client.files
+  return await client.files
     .list({
       q: `'${folder}' in parents AND mimeType = '${mimeType}' AND name = '${name}' AND trashed = false`,
       pageSize: 1,
@@ -129,6 +129,4 @@ export const uploadFile = async (
     .catch(
       async () => await createFile(client, folder, content, name, mimeType)
     )
-
-  return file
 }
