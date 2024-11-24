@@ -28,6 +28,8 @@ export default async (
   const data = await getContent(logo)
   const folders = await list(drive, credentials)
 
+  console.info(`Processing "${drive}"...`)
+
   return folders.map((folder) => {
     return {
       folder,

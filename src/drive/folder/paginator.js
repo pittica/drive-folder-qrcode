@@ -26,4 +26,8 @@ export default async (id, pageToken = null, credentials) =>
       supportsAllDrives: true,
     })
     .then(({ data }) => data)
-    .catch(() => null)
+    .catch(({ code, errors }) => {
+      errors.forEach(({ message }) => console.error(code, message))
+
+      return null
+    })

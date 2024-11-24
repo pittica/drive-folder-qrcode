@@ -37,6 +37,8 @@ export const list = async (id, credentials = null) => {
       } else {
         token = results.nextPageToken
       }
+    } else {
+      break
     }
   }
 
