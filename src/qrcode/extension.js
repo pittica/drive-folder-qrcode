@@ -14,6 +14,7 @@
 
 import path from "path"
 import { optimize } from "svgo"
+import getBackground from "./extension/get-background"
 import fillCaption from "./extension/fill-caption"
 import fillMargin from "./extension/fill-margin"
 import document from "./extension/document"
@@ -39,6 +40,9 @@ export default async (
       family: font.family,
     })
   }
+
+  const bg = svg.querySelector("rect")
+  bg.parentElement.removeChild(bg)
 
   const canvas = createCanvas(width, height + margin, "svg")
   const context = canvas.getContext("2d")
@@ -79,13 +83,21 @@ export default async (
       "removeUselessStrokeAndFill",
       "removeComments",
       "mergePaths",
-      "removeOffCanvasPaths",
       "convertPathData",
       "convertStyleToAttrs",
       "removeEmptyContainers",
     ],
   })
   const optimized = document(data)
+  const background = getBackground(
+    createCanvas,
+    width,
+    height,
+    margin,
+    backgroundOptions.color
+  )
 
-  svg.innerHTML = optimized.getElementsByTagName("svg")[0].innerHTML
+  svg.innerHTML =
+    background.querySelector("svg").innerHTML +
+    optimized.getElementsByTagName("svg")[0].innerHTML
 }

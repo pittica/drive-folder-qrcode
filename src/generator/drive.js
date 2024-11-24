@@ -14,8 +14,7 @@
 
 import generate from "./generate"
 import { uploadFile } from "../drive/folder"
-import SVGtoPDF from "svg-to-pdfkit"
-import PDFDocument from "pdfkit"
+import pdf from "./pdf"
 import MemoryStream from "memorystream"
 
 export default async (
@@ -43,22 +42,14 @@ export default async (
     qr.getRawData("svg").then((buffer) => {
       switch (format.toUpperCase()) {
         case "PDF":
-          const pdf = new PDFDocument({
-            compress: false,
-            size: [size * 0.75, (size + margin * 2) * 0.75],
-          })
+          const doc = pdf(size, margin, buffer)
           const stream = new MemoryStream(null, {
             readable: false,
           })
 
-          SVGtoPDF(pdf, buffer.toString(), 0, 0, {
-            width: size * 0.75,
-            height: (size + margin) * 0.75,
-          })
+          doc.pipe(stream)
 
-          pdf.pipe(stream)
-
-          pdf.on("end", async () => {
+          doc.on("end", async () => {
             await uploadFile(
               output,
               Buffer.concat(stream.queue).toString(),
@@ -70,7 +61,7 @@ export default async (
             stream.destroy()
           })
 
-          pdf.end()
+          doc.end()
 
           return
         case "SVG":

@@ -29,5 +29,8 @@ export default (svg) => {
     clip.parentElement.removeChild(clip)
   }
 
+  const defs = svg.querySelector("defs")
+  defs.parentElement.removeChild(defs)
+
   return svg
 }

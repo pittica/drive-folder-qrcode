@@ -15,8 +15,7 @@
 import generate from "./generate"
 import { join } from "path"
 import { writeFileSync, createWriteStream } from "fs"
-import SVGtoPDF from "svg-to-pdfkit"
-import PDFDocument, { heightOfString } from "pdfkit"
+import pdf from "./pdf"
 
 export default async (
   drive,
@@ -43,16 +42,11 @@ export default async (
     qr.getRawData("svg").then((buffer) => {
       switch (format.toUpperCase()) {
         case "PDF":
-          const pdf = new PDFDocument({
-            compress: false,
-            size: [size * 0.75, (size + margin * 2) * 0.75],
-          })
+          const doc = pdf(size, margin, buffer)
           const stream = createWriteStream(join(output, `${name} - ${id}.pdf`))
 
-          SVGtoPDF(pdf, buffer.toString(), 0, 0)
-
-          pdf.pipe(stream)
-          pdf.end()
+          doc.pipe(stream)
+          doc.end()
 
           break
         case "SVG":
