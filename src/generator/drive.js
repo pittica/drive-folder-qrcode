@@ -26,7 +26,7 @@ export default async (
   font,
   size,
   margin,
-  format = "pdf",
+  format = "PDF",
   credentials = null
 ) => {
   const images = await generate(
@@ -58,15 +58,17 @@ export default async (
 
           pdf.pipe(stream)
 
-          pdf.on("end", () =>
-            uploadFile(
+          pdf.on("end", async () => {
+            await uploadFile(
               output,
               Buffer.concat(stream.queue).toString(),
               `${name} - ${id}.pdf`,
               "application/pdf",
               credentials
             )
-          )
+
+            stream.destroy()
+          })
 
           pdf.end()
 
