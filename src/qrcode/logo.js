@@ -19,7 +19,13 @@ import { URL } from "url"
 import fs from "fs"
 import window from "./window"
 
-export async function getContent(file) {
+/**
+ * Gets the logo content.
+ *
+ * @param {string} file File path or URL.
+ * @returns {Output} The logo content.
+ */
+export const getContent = async (file) => {
   try {
     const url = new URL(file)
     const protocol = url.protocol.toUpperCase()
@@ -29,18 +35,37 @@ export async function getContent(file) {
 
       return data
     } else {
-      const { data } = optimize(fs.readFileSync(file))
-
-      return data
+      return getFile(file)
     }
   } catch (ex) {
-    const { data } = optimize(fs.readFileSync(file))
-
-    return data
+    return getFile(file)
   }
 }
 
-export function resize(data, size) {
+/**
+ * Gets file content from the given file path
+ *
+ * @param {string} file File path.
+ * @returns {string} File content from the given file path
+ */
+export const getFile = (file) => {
+  try {
+    const { data } = optimize(fs.readFileSync(file))
+
+    return data
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Resizes a logo from the given data.
+ *
+ * @param {string} data SVG data.
+ * @param {Number} size Greather side size of the logo.
+ * @returns Resized logo.
+ */
+export const resize = (data, size) => {
   const win = window(data)
 
   registerWindow(win, win.document)
