@@ -27,7 +27,11 @@ export default async (id, pageToken = null, credentials) =>
     })
     .then(({ data }) => data)
     .catch(({ code, errors }) => {
-      errors.forEach(({ message }) => console.error(code, message))
+      if (errors) {
+        errors.forEach(({ message }) => console.error(code, message))
+      } else {
+        console.error(code)
+      }
 
       return null
     })

@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export default (context, width, height, margin, color) => {
+export default (context, width, height, margin, color, rounded) => {
   const over = margin * 2
 
   context.fillStyle = color
-  context.roundRect(0, 0, width, height + over, margin)
-  context.roundRect(margin, margin, width - over, height - over, margin)
+  context.roundRect(0, 0, width, height + over, rounded ? margin : 0)
+  context.roundRect(
+    margin,
+    margin,
+    width - over,
+    height - over,
+    rounded ? margin : 0
+  )
   context.fill("evenodd")
 }

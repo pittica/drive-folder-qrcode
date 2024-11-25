@@ -25,6 +25,7 @@ export default async (
   font,
   size,
   margin,
+  rounded = false,
   format = "PDF",
   credentials = null
 ) => {
@@ -35,6 +36,7 @@ export default async (
     font,
     size,
     margin,
+    rounded,
     credentials
   )
 

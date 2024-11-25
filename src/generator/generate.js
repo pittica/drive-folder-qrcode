@@ -23,6 +23,7 @@ export default async (
   font,
   size,
   margin,
+  rounded = false,
   credentials = null
 ) => {
   const data = await getContent(logo)
@@ -39,7 +40,8 @@ export default async (
         logo,
         data ? resize(data, size) : null,
         colors,
-        font
+        font,
+        rounded
       )
 
       console.info(`Creating QR code for "${folder.name}".`)

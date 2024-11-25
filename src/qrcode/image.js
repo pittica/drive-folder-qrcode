@@ -24,7 +24,8 @@ export default (
   image,
   logo,
   { fore, dots, square, background, border },
-  font
+  font,
+  rounded = false
 ) => {
   const qr = new QRCodeStyling({
     jsdom: JSDOM,
@@ -37,15 +38,15 @@ export default (
     image,
     dotsOptions: {
       color: fore,
-      type: "dots",
+      type: rounded ? "dots" : "square",
     },
     cornersDotOptions: {
       color: dots,
-      type: "dot",
+      type: rounded ? "dot" : "square",
     },
     cornersSquareOptions: {
       color: square,
-      type: "extra-rounded",
+      type: rounded ? "extra-rounded" : "square",
     },
     backgroundOptions: {
       color: background,
@@ -61,6 +62,7 @@ export default (
     caption: name,
     logo,
     font,
+    rounded,
   })
 
   qr.applyExtension(extension)

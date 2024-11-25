@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export default (context, width, height, margin, color) => {
+export default (context, width, height, margin, color, rounded) => {
   context.fillStyle = color
-  context.roundRect(1, 1, width - 2, height + margin * 2 - 2, margin)
+  context.roundRect(
+    1,
+    1,
+    width - 2,
+    height + margin * 2 - 2,
+    rounded ? margin : 0
+  )
   context.fill()
 }

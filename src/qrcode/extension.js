@@ -19,6 +19,7 @@ import fillCaption from "./extension/fill-caption"
 import fillMargin from "./extension/fill-margin"
 import document from "./extension/document"
 import undef from "./extension/undef"
+import { eid } from "@svgdotjs/svg.js"
 
 export default async (
   svg,
@@ -33,9 +34,10 @@ export default async (
     backgroundOptions,
     borderOptions,
     font,
+    rounded,
   }
 ) => {
-  if (font.path) {
+  if (font.path && font.family) {
     registerFont(font.path, {
       family: font.family,
     })
@@ -47,9 +49,9 @@ export default async (
   const canvas = createCanvas(width, height + margin, "svg")
   const context = canvas.getContext("2d")
 
-  fillMargin(context, width, height, margin, borderOptions.color)
+  fillMargin(context, width, height, margin, borderOptions.color, rounded)
 
-  context.font = `${margin}px "${font.family}"`
+  context.font = font.family ? `${margin}px "${font.family}"` : `${margin}px`
   context.fillStyle = backgroundOptions.color
 
   fillCaption(caption.toUpperCase(), context, canvas, margin)
@@ -94,7 +96,8 @@ export default async (
     width,
     height,
     margin,
-    backgroundOptions.color
+    backgroundOptions.color,
+    rounded
   )
 
   svg.innerHTML =

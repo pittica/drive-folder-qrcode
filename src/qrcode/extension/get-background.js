@@ -15,11 +15,11 @@
 import document from "./document"
 import fillBackground from "./fill-background"
 
-export default (createCanvas, width, height, margin, color) => {
+export default (createCanvas, width, height, margin, color, rounded) => {
   const canvas = createCanvas(width, height + margin, "svg")
   const context = canvas.getContext("2d")
 
-  fillBackground(context, width, height, margin, color)
+  fillBackground(context, width, height, margin, color, rounded)
 
   return document(canvas.toBuffer().toString())
 }
