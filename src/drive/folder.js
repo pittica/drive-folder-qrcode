@@ -48,7 +48,7 @@ export const list = async (id, credentials = null) => {
 /**
  * Creates a file in the given Drive folder.
  *
- * @param {GoogleAuth} client Google Auth client instance.
+ * @param {Drive} client Google Drive client instance.
  * @param {string} folder Folder ID.
  * @param {string} content File content.
  * @param {string} name File name.
