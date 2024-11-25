@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import paginator from "./folder/paginator"
 import drive from "./client"
 
 /**
- * Lists all files in the folder with the given ID.
+ * Lists all subfolders in the folder with the given ID.
  *
  * @param {string} id Folder ID.
- * @param {string} credentials Service account path.
- * @returns {Array} All files in the folder with the given ID.
+ * @param {string} credentials Service account JSON file path.
+ * @returns {Array} All subfolders in the folder with the given ID.
  */
 export const list = async (id, credentials = null) => {
   const files = []
@@ -53,7 +52,7 @@ export const list = async (id, credentials = null) => {
  * @param {string} content File content.
  * @param {string} name File name.
  * @param {string} mimeType MIME type in "type/sub" format.
- * @param {string} credentials Service account path.
+ * @param {string} credentials Service account JSON file path.
  * @returns {File} The created file.
  */
 export const createFile = async (client, folder, content, name, mimeType) =>
@@ -89,7 +88,7 @@ export const createFile = async (client, folder, content, name, mimeType) =>
  * @param {string} content File content.
  * @param {string} name File name.
  * @param {string} mimeType MIME type in "type/sub" format.
- * @param {string} credentials Service account path.
+ * @param {string} credentials Service account JSON file path.
  * @returns {File} The created file.
  */
 export const uploadFile = async (
@@ -130,3 +129,33 @@ export const uploadFile = async (
       async () => await createFile(client, folder, content, name, mimeType)
     )
 }
+
+/**
+ * Lists all subfolders in the folder with the given ID by page.
+ *
+ * @param {string} id Folder ID.
+ * @param {string} pageToken Page token.
+ * @param {string} credentials Service account JSON file path.
+ * @returns {Array} All subfolders in the folder with the given ID.
+ */
+export const paginator = async (id, pageToken = null, credentials) =>
+  await drive(credentials)
+    .files.list({
+      q: `'${id}' in parents AND mimeType = 'application/vnd.google-apps.folder' AND trashed = false`,
+      pageToken,
+      pageSize: 15,
+      fields: "nextPageToken, files(id, name, webViewLink)",
+      spaces: "drive",
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+    })
+    .then(({ data }) => data)
+    .catch(({ code, errors }) => {
+      if (errors) {
+        errors.forEach(({ message }) => console.error(code, message))
+      } else {
+        console.error(code)
+      }
+
+      return null
+    })

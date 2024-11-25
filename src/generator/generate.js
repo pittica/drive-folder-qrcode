@@ -28,7 +28,6 @@ export default async (
 ) => {
   if (drive) {
     const folders = await list(drive, credentials)
-
     const data = await getContent(logo)
 
     console.info(`Processing "${drive}"...`)
