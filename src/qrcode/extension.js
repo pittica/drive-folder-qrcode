@@ -19,7 +19,6 @@ import fillCaption from "./extension/fill-caption"
 import fillMargin from "./extension/fill-margin"
 import document from "./extension/document"
 import undef from "./extension/undef"
-import { eid } from "@svgdotjs/svg.js"
 
 export default async (
   svg,

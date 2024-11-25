@@ -26,32 +26,37 @@ export default async (
   rounded = false,
   credentials = null
 ) => {
-  const data = await getContent(logo)
-  const folders = await list(drive, credentials)
+  if (drive) {
+    const folders = await list(drive, credentials)
 
-  console.info(`Processing "${drive}"...`)
+    const data = await getContent(logo)
 
-  return folders.map((folder) => {
-    try {
-      const qr = image(
-        folder,
-        size,
-        margin,
-        logo,
-        data ? resize(data, size) : null,
-        colors,
-        font,
-        rounded
-      )
+    console.info(`Processing "${drive}"...`)
 
-      console.info(`Creating QR code for "${folder.name}".`)
+    return folders.map((folder) => {
+      try {
+        const qr = image(
+          folder,
+          size,
+          margin,
+          logo,
+          data ? resize(data, size) : null,
+          colors,
+          font,
+          rounded
+        )
 
-      return {
-        folder,
-        qr,
+        console.info(`Creating QR code for "${folder.name}".`)
+
+        return {
+          folder,
+          qr,
+        }
+      } catch {
+        console.error(`Error creating QR code for "${folder.name}".`)
       }
-    } catch {
-      console.error(`Error creating QR code for "${folder.name}".`)
-    }
-  })
+    })
+  } else {
+    console.error("Source Drive or folder is required.")
+  }
 }
