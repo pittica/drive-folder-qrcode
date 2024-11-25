@@ -59,4 +59,6 @@ export default async (
   } else {
     console.error("Source Drive or folder is required.")
   }
+
+  return []
 }

@@ -92,7 +92,6 @@ export const local = async (
     format,
     credentials
   )
-
 export default {
   local,
   drive,

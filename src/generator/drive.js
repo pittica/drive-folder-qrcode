@@ -28,8 +28,8 @@ export default async (
   rounded = false,
   format = "PDF",
   credentials = null
-) => {
-  const images = await generate(
+) =>
+  await generate(
     drive,
     logo,
     colors,
@@ -38,45 +38,48 @@ export default async (
     margin,
     rounded,
     credentials
+  ).then(
+    async (images) =>
+      await Promise.all(
+        images.map(
+          async ({ folder: { id, name }, qr }) =>
+            await qr.getRawData("svg").then(async (buffer) => {
+              switch (format.toUpperCase()) {
+                case "PDF":
+                  const doc = pdf(size, margin, buffer)
+                  const stream = new MemoryStream(null, {
+                    readable: false,
+                  })
+
+                  doc.pipe(stream)
+
+                  doc.on("end", async () => {
+                    await uploadFile(
+                      output,
+                      Buffer.concat(stream.queue).toString(),
+                      `${name} - ${id}.pdf`,
+                      "application/pdf",
+                      credentials
+                    )
+
+                    stream.destroy()
+                  })
+
+                  doc.end()
+
+                  return id
+                case "SVG":
+                  const s = await uploadFile(
+                    output,
+                    buffer.toString(),
+                    `${name} - ${id}.svg`,
+                    "image/svg+xml",
+                    credentials
+                  )
+
+                  return id
+              }
+            })
+        )
+      )
   )
-
-  images.forEach(({ folder: { id, name }, qr }) =>
-    qr.getRawData("svg").then((buffer) => {
-      switch (format.toUpperCase()) {
-        case "PDF":
-          const doc = pdf(size, margin, buffer)
-          const stream = new MemoryStream(null, {
-            readable: false,
-          })
-
-          doc.pipe(stream)
-
-          doc.on("end", async () => {
-            await uploadFile(
-              output,
-              Buffer.concat(stream.queue).toString(),
-              `${name} - ${id}.pdf`,
-              "application/pdf",
-              credentials
-            )
-
-            stream.destroy()
-          })
-
-          doc.end()
-
-          return
-        case "SVG":
-          uploadFile(
-            output,
-            buffer.toString(),
-            `${name} - ${id}.svg`,
-            "image/svg+xml",
-            credentials
-          )
-
-          return
-      }
-    })
-  )
-}

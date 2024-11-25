@@ -28,8 +28,8 @@ export default async (
   rounded = false,
   format = "PDF",
   credentials = null
-) => {
-  const images = await generate(
+) =>
+  await generate(
     drive,
     logo,
     colors,
@@ -38,23 +38,31 @@ export default async (
     margin,
     rounded,
     credentials
+  ).then(
+    async (images) =>
+      await Promise.all(
+        images.map(
+          async ({ folder: { id, name }, qr }) =>
+            await qr.getRawData("svg").then((buffer) => {
+              switch (format.toUpperCase()) {
+                case "PDF":
+                  const doc = pdf(size, margin, buffer)
+                  const stream = createWriteStream(
+                    join(output, `${name} - ${id}.pdf`)
+                  )
+
+                  doc.pipe(stream)
+                  doc.end()
+
+                  return stream.path
+                case "SVG":
+                  const dest = join(output, `${name} - ${id}.svg`)
+
+                  writeFileSync(dest, buffer.toString())
+
+                  return dest
+              }
+            })
+        )
+      )
   )
-
-  images.forEach(({ folder: { id, name }, qr }) =>
-    qr.getRawData("svg").then((buffer) => {
-      switch (format.toUpperCase()) {
-        case "PDF":
-          const doc = pdf(size, margin, buffer)
-          const stream = createWriteStream(join(output, `${name} - ${id}.pdf`))
-
-          doc.pipe(stream)
-          doc.end()
-
-          break
-        case "SVG":
-          writeFileSync(join(output, `${name} - ${id}.svg`), buffer.toString())
-          break
-      }
-    })
-  )
-}
