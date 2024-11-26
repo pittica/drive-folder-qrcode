@@ -46,6 +46,19 @@ export const getContent = async (file) => {
  * Gets file content from the given file path
  *
  * @param {string} file File path.
+ * @param {Number} size Resize size.
+ * @returns {string} File content from the given file path
+ */
+export const getData = async (file, size) => {
+  const data = await getContent(file)
+
+  return data ? resize(data, size) : null
+}
+
+/**
+ * Gets file content from the given file path
+ *
+ * @param {string} file File path.
  * @returns {string} File content from the given file path
  */
 export const getFile = (file) => {

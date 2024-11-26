@@ -14,7 +14,7 @@
 
 import { list } from "../drive/folder"
 import image from "../qrcode/image"
-import { getContent, resize } from "../qrcode/logo"
+import { getData } from "../qrcode/logo"
 
 export default async (
   drive,
@@ -28,7 +28,7 @@ export default async (
 ) => {
   if (drive) {
     const folders = await list(drive, credentials)
-    const data = await getContent(logo)
+    const data = await getData(logo)
 
     console.info(`Processing "${drive}"...`)
 
@@ -39,7 +39,7 @@ export default async (
           size,
           margin,
           logo,
-          data ? resize(data, size) : null,
+          data,
           colors,
           font,
           rounded
