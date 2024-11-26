@@ -21,5 +21,5 @@ export default (context, width, height, margin, color, rounded) => {
     height + margin * 2 - 2,
     rounded ? margin : 0
   )
-  context.fill()
+  context.fill("evenodd")
 }

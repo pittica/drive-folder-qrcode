@@ -24,6 +24,7 @@ export default (size, margin, buffer) => {
   SVGtoPDF(pdf, buffer.toString(), 0, 0, {
     width: size * 0.75,
     height: (size + margin) * 0.75,
+    useCSS: false,
   })
 
   return pdf

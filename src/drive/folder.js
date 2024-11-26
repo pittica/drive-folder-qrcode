@@ -45,6 +45,36 @@ export const list = async (id, credentials = null) => {
 }
 
 /**
+ * Lists all subfolders in the folder with the given ID by page.
+ *
+ * @param {string} id Folder ID.
+ * @param {string} pageToken Page token.
+ * @param {string} credentials Service account JSON file path.
+ * @returns {Array} All subfolders in the folder with the given ID.
+ */
+export const paginator = async (id, pageToken = null, credentials) =>
+  await drive(credentials)
+    .files.list({
+      q: `'${id}' in parents AND mimeType = 'application/vnd.google-apps.folder' AND trashed = false`,
+      pageToken,
+      pageSize: 15,
+      spaces: "drive",
+      fields: "nextPageToken, files(id, name, webViewLink)",
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+    })
+    .then(({ data }) => data)
+    .catch(({ code, errors }) => {
+      if (errors) {
+        errors.forEach(({ message }) => console.error(code, message))
+      } else {
+        console.error(code)
+      }
+
+      return null
+    })
+
+/**
  * Creates a file in the given Drive folder.
  *
  * @param {Drive} client Google Drive client instance.
@@ -129,33 +159,3 @@ export const uploadFile = async (
       async () => await createFile(client, folder, content, name, mimeType)
     )
 }
-
-/**
- * Lists all subfolders in the folder with the given ID by page.
- *
- * @param {string} id Folder ID.
- * @param {string} pageToken Page token.
- * @param {string} credentials Service account JSON file path.
- * @returns {Array} All subfolders in the folder with the given ID.
- */
-export const paginator = async (id, pageToken = null, credentials) =>
-  await drive(credentials)
-    .files.list({
-      q: `'${id}' in parents AND mimeType = 'application/vnd.google-apps.folder' AND trashed = false`,
-      pageToken,
-      pageSize: 15,
-      fields: "nextPageToken, files(id, name, webViewLink)",
-      spaces: "drive",
-      includeItemsFromAllDrives: true,
-      supportsAllDrives: true,
-    })
-    .then(({ data }) => data)
-    .catch(({ code, errors }) => {
-      if (errors) {
-        errors.forEach(({ message }) => console.error(code, message))
-      } else {
-        console.error(code)
-      }
-
-      return null
-    })

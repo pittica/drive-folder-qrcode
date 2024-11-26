@@ -30,7 +30,8 @@ export const drive = async (
   colorBorder = "#000000",
   fontFamily = "Arial",
   fontPath = null,
-  rounded = true
+  fontColor = null,
+  rounded = false
 ) =>
   await driveGenerator(
     drive,
@@ -46,6 +47,7 @@ export const drive = async (
     {
       path: fontPath,
       family: fontFamily,
+      color: fontColor,
     },
     parseFloat(size),
     parseFloat(margin),
@@ -69,6 +71,7 @@ export const local = async (
   colorBorder = "#000000",
   fontFamily = "Arial",
   fontPath = null,
+  fontColor = null,
   rounded = false
 ) =>
   await localGenerator(
@@ -85,6 +88,7 @@ export const local = async (
     {
       path: fontPath,
       family: fontFamily,
+      color: fontColor,
     },
     parseFloat(size),
     parseFloat(margin),
@@ -92,6 +96,7 @@ export const local = async (
     format,
     credentials
   )
+
 export default {
   local,
   drive,
