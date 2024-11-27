@@ -50,7 +50,9 @@ export default async (
 
   fillMargin(context, width, height, margin, borderOptions.color, rounded)
 
-  context.font = font.family ? `${margin}px "${font.family}"` : `${margin}px`
+  context.font = font.family
+    ? `bold ${margin + 4}px "${font.family}"`
+    : `bold ${margin + 4}px`
   context.fillStyle = font.color || backgroundOptions.color
 
   fillCaption(caption.toUpperCase(), context, canvas, margin)

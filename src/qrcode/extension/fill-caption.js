@@ -18,6 +18,6 @@ export default (text, context, canvas, margin) => {
   context.fillText(
     text,
     canvas.width / 2 - measure.width / 2,
-    canvas.height + margin / 2 - measure.actualBoundingBoxAscent
+    canvas.height + margin / 2 - measure.actualBoundingBoxAscent + 4
   )
 }

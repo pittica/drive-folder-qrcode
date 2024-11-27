@@ -25,7 +25,8 @@ export default (
   logo,
   { fore, dots, square, background, border },
   font,
-  rounded = false
+  rounded = false,
+  captionCallback = (caption) => caption
 ) => {
   const qr = new QRCodeStyling({
     jsdom: JSDOM,
@@ -59,7 +60,7 @@ export default (
       crossOrigin: "anonymous",
       margin,
     },
-    caption: name,
+    caption: captionCallback(name),
     logo,
     font,
     rounded,
