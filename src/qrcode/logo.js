@@ -76,7 +76,7 @@ export const getFile = (file) => {
  *
  * @param {string} data SVG data.
  * @param {Number} size Greather side size of the logo.
- * @returns Resized logo.
+ * @returns {string} Resized logo.
  */
 export const resize = (data, size) => {
   const win = window(data)

@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import generate from "./generate"
-import { join } from "path"
-import { writeFileSync, createWriteStream } from "fs"
-import pdf from "./pdf"
 
 export default async (
   drive,
@@ -27,42 +24,20 @@ export default async (
   margin,
   rounded = false,
   format = "PDF",
-  credentials = null
+  credentials = null,
+  captionCallback = null
 ) =>
   await generate(
     drive,
+    output,
     logo,
     colors,
     font,
     size,
     margin,
     rounded,
-    credentials
-  ).then(
-    async (images) =>
-      await Promise.all(
-        images.map(
-          async ({ folder: { id, name }, qr }) =>
-            await qr.getRawData("svg").then((buffer) => {
-              switch (format.toUpperCase()) {
-                case "PDF":
-                  const doc = pdf(size, margin, buffer)
-                  const stream = createWriteStream(
-                    join(output, `${name} - ${id}.pdf`)
-                  )
-
-                  doc.pipe(stream)
-                  doc.end()
-
-                  return stream.path
-                case "SVG":
-                  const dest = join(output, `${name} - ${id}.svg`)
-
-                  writeFileSync(dest, buffer.toString())
-
-                  return dest
-              }
-            })
-        )
-      )
+    credentials,
+    format,
+    true,
+    captionCallback
   )

@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import generate from "./generate"
-import { uploadFile } from "../drive/folder"
-import pdf from "./pdf"
-import MemoryStream from "memorystream"
 
 export default async (
   drive,
@@ -27,59 +24,20 @@ export default async (
   margin,
   rounded = false,
   format = "PDF",
-  credentials = null
+  credentials = null,
+  captionCallback = null
 ) =>
   await generate(
     drive,
+    output,
     logo,
     colors,
     font,
     size,
     margin,
     rounded,
-    credentials
-  ).then(
-    async (images) =>
-      await Promise.all(
-        images.map(
-          async ({ folder: { id, name }, qr }) =>
-            await qr.getRawData("svg").then(async (buffer) => {
-              switch (format.toUpperCase()) {
-                case "PDF":
-                  const doc = pdf(size, margin, buffer)
-                  const stream = new MemoryStream(null, {
-                    readable: false,
-                  })
-
-                  doc.pipe(stream)
-
-                  doc.on("end", async () => {
-                    await uploadFile(
-                      output,
-                      Buffer.concat(stream.queue).toString(),
-                      `${name} - ${id}.pdf`,
-                      "application/pdf",
-                      credentials
-                    )
-
-                    stream.destroy()
-                  })
-
-                  doc.end()
-
-                  return id
-                case "SVG":
-                  const s = await uploadFile(
-                    output,
-                    buffer.toString(),
-                    `${name} - ${id}.svg`,
-                    "image/svg+xml",
-                    credentials
-                  )
-
-                  return id
-              }
-            })
-        )
-      )
+    credentials,
+    format,
+    false,
+    captionCallback
   )

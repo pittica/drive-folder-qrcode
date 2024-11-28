@@ -55,7 +55,7 @@ export default async (
     : `bold ${margin + 4}px`
   context.fillStyle = font.color || backgroundOptions.color
 
-  fillCaption(caption.toUpperCase(), context, canvas, margin)
+  fillCaption(caption, context, canvas, margin)
 
   const frame = document(canvas.toBuffer().toString())
   const elements = frame

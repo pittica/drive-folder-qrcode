@@ -159,3 +159,37 @@ export const uploadFile = async (
       async () => await createFile(client, folder, content, name, mimeType)
     )
 }
+
+/**
+ * Gets an output filename.
+ *
+ * @param {object} folder Google Drive folder object.
+ * @param {string} extension File extension.
+ * @returns {string} Output filename.
+ */
+export const filename = ({ name, id }, extension) =>
+  `${name} - ${id}.${extension.toLowerCase()}`
+
+/**
+ * Determines whether the given file name exists in the given folder.
+ *
+ * @param {string} folder Folder ID.
+ * @param {string} name File name.
+ * @param {string} credentials Service account JSON file path.
+ * @returns {boolean} A value indicating whether the given file name exists in the given folder.
+ */
+export const hasFile = async (folder, name, credentials = null) => {
+  const client = await drive(credentials)
+
+  return await client.files
+    .list({
+      q: `'${folder}' in parents AND name = '${name}' AND trashed = false`,
+      pageSize: 1,
+      fields: "files(id)",
+      spaces: "drive",
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+    })
+    .then(({ data: { files } }) => files.length > 0)
+    .catch(() => false)
+}
