@@ -1,7 +1,7 @@
 {
   "name": "@pittica/drive-folder-qrcode",
   "private": false,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Creates QR codes from Google Drive folder names.",
   "main": "dist/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
     "@svgdotjs/svg.js": "^3.2.4",
-    "axios": "^1.7.7",
+    "axios": "^1.7.8",
     "canvas": "^2.11.2",
     "deasync": "^0.1.30",
     "googleapis": "^144.0.0",
@@ -39,7 +39,6 @@
     "memorystream": "^0.3.1",
     "qr-code-styling": "^1.8.4",
     "svg-to-pdfkit": "^0.1.8",
-    "svgdom": "^0.1.19",
     "svgo": "^3.3.2"
   },
   "devDependencies": {
@@ -47,7 +46,7 @@
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "mkdirp": "^3.0.1",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.1",
     "rimraf": "^6.0.1",
     "run-func": "^3.0.0"
   }

@@ -141,7 +141,7 @@ export default class Image {
         case "PDF":
           const stream = createWriteStream(join(output, this.filename(format)))
 
-          const result = this.pdf(stream, buffer, (stream) => stream.path)
+          const result = this.pdf(stream, buffer, ({ path }) => path)
 
           stream.close()
 
@@ -177,10 +177,10 @@ export default class Image {
           const file = this.pdf(
             stream,
             buffer,
-            async (stream) =>
+            async ({ queue }) =>
               await uploadFile(
                 output,
-                Buffer.concat(stream.queue).toString(),
+                Buffer.concat(queue).toString(),
                 this.filename(format),
                 "application/pdf",
                 credentials
@@ -189,17 +189,15 @@ export default class Image {
 
           stream.destroy()
 
-          return file.id
+          return file
         case "SVG":
-          const { id } = await uploadFile(
+          return await uploadFile(
             output,
             buffer.toString(),
             this.filename(format),
             "image/svg+xml",
             credentials
           )
-
-          return id
         default:
           return null
       }
